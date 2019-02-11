@@ -3,7 +3,9 @@
 //Importação da Classe Crypto necessária para 
 //o sistema de geração de Tokens de acesso JWT
 const crypto = require('crypto');
+
 //##################################################
+const formatDate = require('yyyy-mm-dd');
 
 // instancia da classe de configuracao sql 
 const sql = require('../db/sqlconfig');
@@ -30,23 +32,23 @@ exports.getLogin = function (req, res) {
     let query = ""
     // let senha = users.senha;
 
-    
+
 
     getNewTokenLoginWithJWT(users.login, password, 1);
 
     // Verifico se existe o caracter @ na string para saber se é um email 
-    if (user.search('@') == -1) {        
-        query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" + user + "' AND SENHA = '" + password + "' "        
+    if (user.search('@') == -1) {
+        query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" + user + "' AND SENHA = '" + password + "' "
     } else {
         query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" + user + "' AND SENHA = '" + password + "' "
-    }    
+    }
     sql.execSqlQuery(query, res)
 };
 
 module.exports.getByName = function (res, req) {
-        
 
-    
+
+
 }
 
 
@@ -54,7 +56,7 @@ module.exports.getByName = function (res, req) {
 //#############################################################
 //#############################################################
 //GERAÇÃO DE TOKEN USANDO JWT ASSINADO COM HS256/SHA256
-function getNewTokenLoginWithJWT(email, senha, idUsuario){
+function getNewTokenLoginWithJWT(email, senha, idUsuario) {
 
     //###############################################################
     //Definição do Cabeçalho com padrão de codificação do Token
@@ -64,11 +66,11 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario){
     });
     //###############################################################
     //###############################################################
-     
+
     //###############################################################
     //Definição do corpo do Token
     const payload = JSON.stringify({
-        'id':idUsuario,
+        'id': idUsuario,
         'email': email,
         'password': senha
     });
@@ -94,9 +96,9 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario){
     //Concatenação do cabeçalho e do corpo do Token
     const data = base64Header + '.' + base64Payload;
     const signature = crypto
-    .createHmac('sha256', secret)
-    .update(data)
-    .digest('base64');
+        .createHmac('sha256', secret)
+        .update(data)
+        .digest('base64');
 
     const signatureUrl = signature
         .replace(/\+/g, '-')
@@ -140,7 +142,7 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario){
 //#############################################################
 //Checa se a assinatura em HS256 é Válida, retorna TRUE 
 //para um TOKEN válido e FALSE para um token inválido
-function ckeckJWTKeiIsValid(token){
+function ckeckJWTKeiIsValid(token) {
 
     //###############################################################
     //###############################################################
@@ -163,9 +165,9 @@ function ckeckJWTKeiIsValid(token){
     const data = base64Header + '.' + base64Payload;
 
     const signature = crypto
-    .createHmac('sha256', secret)
-    .update(data)
-    .digest('base64');
+        .createHmac('sha256', secret)
+        .update(data)
+        .digest('base64');
 
     const signatureUrl = signature
         .replace(/\+/g, '-')
@@ -173,20 +175,20 @@ function ckeckJWTKeiIsValid(token){
         .replace(/=/g, '')
 
 
-    let data = base64Payload;  
-    let buff = new Buffer(data, 'base64');  
+    let data = base64Payload;
+    let buff = new Buffer(data, 'base64');
     let text = buff.toString('ascii');
 
     console.log(text);
 
-    if(signatureUrl == key){
+    if (signatureUrl == key) {
         return true;
-    }else{
+    } else {
         return false;
     }
 
-//#############################################################
-   //##########################################################
+    //#############################################################
+    //##########################################################
     //Como usar
     /*
     if(ckeckJWTKeiIsValid(token) === true){
@@ -195,19 +197,19 @@ function ckeckJWTKeiIsValid(token){
         console.log("TOKEN inVÁLIDO");
     }
     */
-   //##########################################################
-//#############################################################
+    //##########################################################
+    //#############################################################
 }
 //#############################################################
 //#############################################################
 //#############################################################
 
 
-function getIdUserWithToken(token){
+function getIdUserWithToken(token) {
 
 
-    let data = token;  
-    let buff = new Buffer(data, 'base64');  
+    let data = token;
+    let buff = new Buffer(data, 'base64');
     let text = buff.toString('ascii');
 
     console.log(text);
@@ -220,3 +222,19 @@ function getIdUserWithToken(token){
 
 
 }
+
+exports.getSentStock = function (req, res) {
+    let userData = JSON.parse(req.params.data);
+    let idUsuario = userData['idUsuario'];
+    let data = userData['data'];
+
+
+    let dateNow = new Date()
+    dateNow = formatDate(new Date(dateNow.toISOString(data)))
+
+    
+    let query = "SELECT COUNT(idEstoque) ENVIOS FROM PRE_ESTOQUE WHERE IDUSUARIO = " + idUsuario + " AND dataEstoque = '" + dateNow + "' "
+    
+    sql.execSqlQuery(query, res)
+    
+};
