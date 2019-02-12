@@ -50,6 +50,7 @@ exports.getById = function (req, res) {
 exports.insertEstoque = function (req, res) {
 
     let dataRet = JSON.parse(req.params.data);
+    
     let idUsuario = dataRet.idUsuario;
     let dataEnvio = dataRet.dataEnvio;
     let date = new Date();
@@ -77,7 +78,6 @@ exports.insertEstoque = function (req, res) {
 exports.insertPedido = function(req, res){
 
     let dataRet = JSON.parse(req.params.data);
-
 
     let idUsuario = dataRet.idUsuario;
     let dataEnvio = dataRet.dataEnvio;

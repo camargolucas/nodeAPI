@@ -29,7 +29,7 @@ module.exports.execSqlQuery = function (query, res) {
 }
 
 // Funçao para executar querys no sqlServer
-module.exports.execSqlQueryTeste = function (query, res) {
+module.exports.execSqlQueryLogin = function (query, res) {
 
     return new Promise(function(resolve){
         new sql.ConnectionPool(sqlConfig).connect().then(pool => {

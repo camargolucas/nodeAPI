@@ -36,7 +36,7 @@ exports.getLogin = function (req, res) {
     } else {
         query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" + user + "' AND SENHA = '" + password + "' "
     }    
-    sql.execSqlQueryTeste(query, res)
+    sql.execSqlQueryLogin(query, res)
 };
 
 module.exports.getByName = function (res, req) {
@@ -115,7 +115,7 @@ module.exports.getNewTokenLoginWithJWT = function (email, password, idUser){
     |                    user_login                     |
     |___________________________________________________|
     | id            int     11  autoincrement           |
-    | idUser     int     11  autoincrement index     |
+    | idUser     int     11  autoincrement index        |
     | token         varchar 255 index                   |
     | timestamp     varchar 255                         |
     | status        int     11                          |
