@@ -1,9 +1,7 @@
 'use-strict';
-//##################################################
 //Importação da Classe Crypto necessária para 
 //o sistema de geração de Tokens de acesso JWT
 const crypto = require('crypto');
-//##################################################
 
 // instancia da classe de configuracao sql 
 const sql = require('../db/sqlconfig');
@@ -11,23 +9,34 @@ const sql = require('../db/sqlconfig');
 // Serviço para inserir dados de cadastro o Usuário
 exports.insertByObject = function (req, res) {
     let users = JSON.parse(req.params.data);
-
-    let nomeUsuario = users.nomeUsuario;
-    let email = users.email;
-    let senha = users.senha;
-    let loja = users.loja;
+    console.log(users)
+    let nomeUsuario    = users.nomeUsuario;
+    let email          = users.email;
+    let senha          = users.senha;
+    let loja           = users.loja;
     let apelidoUsuario = users.apelidoUsuario;
 
-    const query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, apelidoUsuario) VALUES (' " + nomeUsuario + "', '" + email + "', '" + senha + "','" + loja + "', '" + apelidoUsuario + "') "
-    sql.execSqlQuery(query, res)
-
+    const checkUserSQL = "SELECT COUNT(email) email, COUNT(apelidoUsuario) apelido FROM PRE_USUARIO WHERE email = '" + email + "' or apelidoUsuario ='" + apelidoUsuario + "'" + ";";
+    sql.execSqlQuery(checkUserSQL, res)
+    .then((value)=>{        
+        let returnCheckEmail = value[0]['email'];
+        let returnCheckLogin = value[0]['apelido'];
+        
+        if (returnCheckEmail == 0 && returnCheckLogin == 0) {
+            console.log('Usuário não registrado');
+            const query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, apelidoUsuario) VALUES (' " + nomeUsuario + "', '" + email + "', '" + senha + "','" + loja + "', '" + apelidoUsuario + "') "
+            sql.execSqlQuery(query, res)            
+        } else {
+            console.log('Usuário já registrado');
+        }
+    })
 };
 
 exports.getLogin = function (req, res) {
-    let users = JSON.parse(req.params.data)
-    let user = users.login
+    let users    = JSON.parse(req.params.data)
+    let user     = users.login
     let password = users.password
-    let query = ""
+    let query    = ""
     // let senha = users.senha;
 
     
@@ -49,48 +58,30 @@ module.exports.getByName = function (res, req) {
     
 }
 
-
-//#############################################################
-//#############################################################
-//#############################################################
 //GERAÇÃO DE TOKEN USANDO JWT ASSINADO COM HS256/SHA256
 function getNewTokenLoginWithJWT(email, senha, idUsuario){
 
-    //###############################################################
     //Definição do Cabeçalho com padrão de codificação do Token
     const header = JSON.stringify({
         'alg': 'HS256',
         'typ': 'JWT'
     });
-    //###############################################################
-    //###############################################################
-     
-    //###############################################################
+
     //Definição do corpo do Token
     const payload = JSON.stringify({
         'id':idUsuario,
         'email': email,
         'password': senha
     });
-    //###############################################################
-    //###############################################################
 
-    //###############################################################
     //Conversão em base64 do cabeçalho e do corpo do Token
     const base64Header = Buffer.from(header).toString('base64').replace(/=/g, '');
     const base64Payload = Buffer.from(payload).toString('base64').replace(/=/g, '');
-    //###############################################################
-    //###############################################################
 
-    //###############################################################
     //Definição da chave secreta de geração da assinatura
     const secret = 'thothcompanyAppKey87461';
-    //###############################################################
-    //###############################################################
 
-    //###############################################################
     //Criação a Assinatura SHA256
-
     //Concatenação do cabeçalho e do corpo do Token
     const data = base64Header + '.' + base64Payload;
     const signature = crypto
@@ -102,10 +93,8 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario){
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=/g, '')
-    //###############################################################
 
     console.log("token_gerado : " + base64Header + "." + base64Payload + "." + signatureUrl);
-    //###############################################################
     //Finalização da criação do TOKEN
     //Retorna o Token Gerado
     getIdUserWithToken(base64Header + "." + base64Payload + "." + signatureUrl);
@@ -128,36 +117,20 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario){
     //console.log("token_gerado : " + token_gerado);
     // console.log("TOKEN_VALIDO : " + ckeckJWTKeiIsValid(token_gerado));
 }
-//#############################################################
-//#############################################################
-//#############################################################
 
-
-
-
-//#############################################################
-//#############################################################
-//#############################################################
 //Checa se a assinatura em HS256 é Válida, retorna TRUE 
 //para um TOKEN válido e FALSE para um token inválido
 function ckeckJWTKeiIsValid(token){
 
-    //###############################################################
-    //###############################################################
     //Definição da chave secreta de geração da assinatura do Token
     const secret = 'thothcompanyAppKey87461';
-    //###############################################################
-    //###############################################################
 
-    //###############################################################
     //Usando Split para separar o cabeçalho, o corpo e a assinatura do Token
     let token_res = token.split(".");
     //Obtendo o valor do cabeçalho e corpo pelo vetor gerado pelo Split
     let base64Header = token_res[0];
     let base64Payload = token_res[1];
     let key = token_res[2];
-    //###############################################################
-    //###############################################################
 
     //Concatenação do cabeçalho e do corpo do Token
     const data = base64Header + '.' + base64Payload;
@@ -185,8 +158,6 @@ function ckeckJWTKeiIsValid(token){
         return false;
     }
 
-//#############################################################
-   //##########################################################
     //Como usar
     /*
     if(ckeckJWTKeiIsValid(token) === true){
@@ -195,13 +166,7 @@ function ckeckJWTKeiIsValid(token){
         console.log("TOKEN inVÁLIDO");
     }
     */
-   //##########################################################
-//#############################################################
 }
-//#############################################################
-//#############################################################
-//#############################################################
-
 
 function getIdUserWithToken(token){
 
