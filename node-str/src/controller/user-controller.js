@@ -28,6 +28,7 @@ exports.insertByObject = function (req, res) {
             sql.execSqlQuery(query, res)            
         } else {
             console.log('Usuário já registrado');
+            console.log('teste');
         }
     })
 };
