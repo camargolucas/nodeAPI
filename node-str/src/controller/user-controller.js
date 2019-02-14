@@ -13,16 +13,27 @@ const sql = require('../db/sqlconfig');
 // Serviço para inserir dados de cadastro o Usuário
 exports.insertByObject = function (req, res) {
     let users = JSON.parse(req.params.data);
-
-    let nomeUsuario = users.nomeUsuario;
-    let email = users.email;
-    let senha = users.senha;
-    let loja = users.loja;
+    console.log(users)
+    let nomeUsuario    = users.nomeUsuario;
+    let email          = users.email;
+    let senha          = users.senha;
+    let loja           = users.loja;
     let apelidoUsuario = users.apelidoUsuario;
 
-    const query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, apelidoUsuario) VALUES (' " + nomeUsuario + "', '" + email + "', '" + senha + "','" + loja + "', '" + apelidoUsuario + "') "
-    sql.execSqlQuery(query, res)
-
+    const checkUserSQL = "SELECT COUNT(email) email, COUNT(apelidoUsuario) apelido FROM PRE_USUARIO WHERE email = '" + email + "' or apelidoUsuario ='" + apelidoUsuario + "'" + ";";
+    sql.execSqlQuery(checkUserSQL, res)
+    .then((value)=>{        
+        let returnCheckEmail = value[0]['email'];
+        let returnCheckLogin = value[0]['apelido'];
+        
+        if (returnCheckEmail == 0 && returnCheckLogin == 0) {
+            console.log('Usuário não registrado');
+            const query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, apelidoUsuario) VALUES (' " + nomeUsuario + "', '" + email + "', '" + senha + "','" + loja + "', '" + apelidoUsuario + "') "
+            sql.execSqlQuery(query, res)            
+        } else {
+            console.log('Usuário já registrado');
+        }
+    })
 };
 
 exports.getLogin = function (req, res) {
