@@ -56,7 +56,7 @@ exports.insertEstoque = function (req, res) {
     date = formatDate(new Date(date.toISOString(dataEnvio)))
 
 
-    let queryInsertEst = "INSERT INTO PRE_ESTOQUE (IDUSUARIO, DATAESTOQUE) VALUES ('" + idUsuario + "','" + date + "'); SELECT SCOPE_IDENTITY() AS id; "
+    let queryInsertEst = "INSERT INTO PRE_ESTOQUE (idUsuario, dataEstoque) VALUES (" + idUsuario + ",'" + date + "'); SELECT SCOPE_IDENTITY() AS id; "    
     sql.execSqlQuery(queryInsertEst, res)   
     .then((retorno)=>{        
         let idEstoque = retorno[0]['id'];        
@@ -64,8 +64,9 @@ exports.insertEstoque = function (req, res) {
             let qtd = (element.produto.qtd)
             let und = (element.produto.unidade)
             let idProduto = (element.produto.nome.IDPRODUTO)
-                            
-            queryInsertDetalhado = "INSERT INTO PRE_ESTOQUE_DETALHADO (idEstoque, idProduto, quantidade, unidade) VALUES ('" + idEstoque + "','" + idProduto + "', '" + qtd + "', '" + und + "') "
+            console.log(qtd + ' ' + und + ' ' + idProduto)       
+            queryInsertDetalhado = "INSERT INTO PRE_ESTOQUE_DETALHADO (idEstoque, idProduto, quantidade, unidade) VALUES (" + idEstoque + "," + idProduto + "," + qtd + ",'" + und + "') "
+            
             sql.execSqlQuery(queryInsertDetalhado, res)            
         });
     })
@@ -85,7 +86,7 @@ exports.insertPedido = function(req, res){
     date = formatDate(new Date(date.toISOString(dataEnvio)))
 
 
-    let queryInsertEst = "INSERT INTO PRE_PEDIDO (IDUSUARIO, DATAPEDIDO) VALUES ('" + idUsuario + "','" + date + "'); SELECT SCOPE_IDENTITY() AS id; "
+    let queryInsertEst = "INSERT INTO PRE_PEDIDO (idUsuario, dataPedido) VALUES (" + idUsuario + ",'" + date + "'); SELECT SCOPE_IDENTITY() AS id; "
     sql.execSqlQuery(queryInsertEst, res)   
     .then((retorno)=>{        
         let idPedido = retorno[0]['id'];        
@@ -94,7 +95,7 @@ exports.insertPedido = function(req, res){
             let und = (element.produto.unidade)
             let idProduto = (element.produto.nome.IDPRODUTO)
                             
-            queryInsertDetalhado = "INSERT INTO PRE_PEDIDO_DETALHADO (idPedido, idProduto, quantidade, unidade) VALUES ('" + idPedido + "','" + idProduto + "', '" + qtd + "', '" + und + "') "
+            queryInsertDetalhado = "INSERT INTO PRE_PEDIDO_DETALHADO (idPedido, idProduto, quantidade, unidade) VALUES (" + idPedido + "," + idProduto + "," + qtd + ",'" + und + "') "
             sql.execSqlQuery(queryInsertDetalhado, res)            
         });
     })

@@ -234,7 +234,23 @@ exports.getSentStock = function (req, res) {
 
     
     let query = "SELECT COUNT(idEstoque) ENVIOS FROM PRE_ESTOQUE WHERE IDUSUARIO = " + idUsuario + " AND dataEstoque = '" + dateNow + "' "
+    sql.execSqlQuery(query, res)
+    .then((v)=>{
+        console.log(v)
+    })
+};
+
+exports.getSentRequest = function (req, res) {
+    let userData = JSON.parse(req.params.data);
+    let idUsuario = userData['idUsuario'];
+    let data = userData['data'];
+
+
+    let dateNow = new Date()
+    dateNow = formatDate(new Date(dateNow.toISOString(data)))
+
     
+    let query = "SELECT COUNT(idPedido) ENVIOS FROM PRE_PEDIDO WHERE IDUSUARIO = " + idUsuario + " AND dataPedido = '" + dateNow + "' "    
     sql.execSqlQuery(query, res)
     
 };
