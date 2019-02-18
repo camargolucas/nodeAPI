@@ -10,22 +10,27 @@ const formatDate = require('yyyy-mm-dd');
 // instancia da classe de configuracao sql 
 const sql = require('../db/sqlconfig');
 
-// Serviço para inserir dados de cadastro o Usuário
+// #########################################################
+// ## Serviço para inserir dados de cadastro o Usuário ####
 exports.insertByObject = function (req, res) {
-    let users = JSON.parse(req.params.data);
-    console.log(users)
+    
+    // resgato o Objeto que foi enviado na URL 
+    let users = JSON.parse(req.params.data);    
+    
+    // Desmembramento do Objeto e distribuido em variaveis
     let nomeUsuario    = users.nomeUsuario;
     let email          = users.email;
     let senha          = users.senha;
     let loja           = users.loja;
     let apelidoUsuario = users.apelidoUsuario;
 
+    // Verificação se ja existe usuario cadastrado 
     const checkUserSQL = "SELECT COUNT(email) email, COUNT(apelidoUsuario) apelido FROM PRE_USUARIO WHERE email = '" + email + "' or apelidoUsuario ='" + apelidoUsuario + "'" + ";";
     sql.execSqlQuery(checkUserSQL, res)
     .then((value)=>{        
         let returnCheckEmail = value[0]['email'];
         let returnCheckLogin = value[0]['apelido'];
-        
+                
         if (returnCheckEmail == 0 && returnCheckLogin == 0) {
             console.log('Usuário não registrado');
             const query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, apelidoUsuario) VALUES (' " + nomeUsuario + "', '" + email + "', '" + senha + "','" + loja + "', '" + apelidoUsuario + "') "
@@ -36,6 +41,9 @@ exports.insertByObject = function (req, res) {
     })
 };
 
+
+// ################################################
+// ## Função que verifica o LOGIN do usuário ###### 
 exports.getLogin = function (req, res) {
     let users = JSON.parse(req.params.data)
     let user = users.login
@@ -234,6 +242,8 @@ function getIdUserWithToken(token) {
 
 }
 
+// #################################################################################
+// ## Função utilizada para verificar se foi enviado estoque pelo Usuário logado ###
 exports.getSentStock = function (req, res) {
     let userData = JSON.parse(req.params.data);
     let idUsuario = userData['idUsuario'];
@@ -246,11 +256,13 @@ exports.getSentStock = function (req, res) {
     
     let query = "SELECT COUNT(idEstoque) ENVIOS FROM PRE_ESTOQUE WHERE IDUSUARIO = " + idUsuario + " AND dataEstoque = '" + dateNow + "' "
     sql.execSqlQuery(query, res)
-    .then((v)=>{
-        console.log(v)
+    .then((ret)=>{
+        console.log(ret)
     })
 };
 
+// #################################################################################
+// ## Função utilizada para verificar se foi enviado Pedido pelo Usuário logado ###
 exports.getSentRequest = function (req, res) {
     let userData = JSON.parse(req.params.data);
     let idUsuario = userData['idUsuario'];

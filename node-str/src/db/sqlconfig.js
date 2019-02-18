@@ -17,11 +17,17 @@ module.exports.execSqlQuery = function (query, res) {
     return new Promise(function(resolve){
 
         new sql.ConnectionPool(sqlConfig).connect().then(pool => {
-            return pool.request().query(query)
+            return pool.request().query(query)            
         }).then(result => {
            
+            // Retorno o resultado para a consulta para o cliente
             res.json((result.recordset))
+
+            // fecho a conexão 
             sql.close();
+
+            // Retorno o resultado da consulta para o servidor para ser utilizado dentro do servidor
+            // para validações etc
             resolve(result.recordset)
         })
         

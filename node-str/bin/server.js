@@ -23,7 +23,7 @@ server.on('listening',onListening);
     next();
 }); */
 
-
+// Normalizando a porta 
 function normalizePort(val){
     const port = parseInt(val,10);
     

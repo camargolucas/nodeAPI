@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res, next) => {
-    res.status(201).send('rodando oi');
+    res.status(201).send('API está rodando');
 });
 
 
