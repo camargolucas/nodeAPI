@@ -51,17 +51,13 @@ exports.getLogin = function (req, res) {
     let query = ""
     // let senha = users.senha;
 
-
-
-    getNewTokenLoginWithJWT(users.login, password, 1);
-
     // Verifico se existe o caracter @ na string para saber se é um email 
     if (user.search('@') == -1) {
         query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" + user + "' AND SENHA = '" + password + "' "
     } else {
         query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" + user + "' AND SENHA = '" + password + "' "
-    }
-    sql.execSqlQuery(query, res)
+    }    
+    sql.execSqlQueryLogin(query, res)
 };
 
 module.exports.getByName = function (res, req) {
@@ -75,7 +71,7 @@ module.exports.getByName = function (res, req) {
 //#############################################################
 //#############################################################
 //GERAÇÃO DE TOKEN USANDO JWT ASSINADO COM HS256/SHA256
-function getNewTokenLoginWithJWT(email, senha, idUsuario) {
+module.exports.getNewTokenLoginWithJWT = function (email, password, idUser){
 
     //###############################################################
     //Definição do Cabeçalho com padrão de codificação do Token
@@ -89,9 +85,9 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario) {
     //###############################################################
     //Definição do corpo do Token
     const payload = JSON.stringify({
-        'id': idUsuario,
+        'id':idUser,
         'email': email,
-        'password': senha
+        'password': password
     });
     //###############################################################
     //###############################################################
@@ -125,7 +121,7 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario) {
         .replace(/=/g, '')
     //###############################################################
 
-    console.log("token_gerado : " + base64Header + "." + base64Payload + "." + signatureUrl);
+    //console.log("token_gerado : " + base64Header + "." + base64Payload + "." + signatureUrl);
     //###############################################################
     //Finalização da criação do TOKEN
     //Retorna o Token Gerado
@@ -134,12 +130,13 @@ function getNewTokenLoginWithJWT(email, senha, idUsuario) {
     return base64Header + "." + base64Payload + "." + signatureUrl;
     /*
     O Token gerado deve ser guardado em uma tabela para consulta posterir
-    Estrutura da tabela de autenticação
+    Estrutura da tabela de autenticação, pode ser usada para bloquear um usuário
+    consultando o status 
      ___________________________________________________
     |                    user_login                     |
     |___________________________________________________|
     | id            int     11  autoincrement           |
-    | idUsuario     int     11  autoincrement index     |
+    | idUser     int     11  autoincrement index        |
     | token         varchar 255 index                   |
     | timestamp     varchar 255                         |
     | status        int     11                          |
@@ -223,22 +220,29 @@ function ckeckJWTKeiIsValid(token) {
 //#############################################################
 //#############################################################
 
+//#############################################################
+//Obtendo o ID do usuário atravez do TOKEN gerado e enviado pelo usuário
+function getIdUserWithToken(token){
 
-function getIdUserWithToken(token) {
+    //###############################################################
+    //Usando Split para separar o cabeçalho, o corpo e a assinatura do Token
+    let token_res = token.split(".");
+    //Obtendo o valor do cabeçalho e corpo pelo vetor gerado pelo Split
+    //let base64Header = token_res[0];
+    let base64Payload = token_res[1];
+    //let key = token_res[2];
+    //###############################################################
+    //###############################################################
 
+    //Decodifica o corpo do Token recebido com base64 decode
+   let data = base64Payload;  
+    let buff = new Buffer(data, 'base64');  
+    //let text = buff.toString('ascii');
+    let dataUser = JSON.parse(buff.toString('ascii'));
 
-    let data = token;
-    let buff = new Buffer(data, 'base64');
-    let text = buff.toString('ascii');
-
-    console.log(text);
-
-    /*
-        Fazer a consulta atraves do Token de usuário para buscar o ID válido.
-        Para qualquer consulta que necessite usar o ID do usuário, deve-se usar 
-        O Id retornado por essa função.
-    */
-
+    //retornamos o ID do usuário abstraido do TOKEN.
+    console.log("ID_USER :" +  dataUser['id']);
+    return dataUser['id'];
 
 }
 
