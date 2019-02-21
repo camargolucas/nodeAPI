@@ -51,7 +51,8 @@ module.exports.execSqlQueryLogin = function (query, res) {
                     "idCargo": result.recordset[0]['idCargo'],
                     "ativo": result.recordset[0]['ativo'],
                     "apelidoUsuario": result.recordset[0]['apelidoUsuario'],
-                    "token": token
+                    "token": token,
+                    "logado": 1
                 }
             ];
 

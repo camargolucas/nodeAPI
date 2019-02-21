@@ -13,7 +13,6 @@ const sql = require('../db/sqlconfig');
 // #########################################################
 // ## Serviço para inserir dados de cadastro o Usuário ####
 exports.insertByObject = function (req, res) {
-    
     // resgato o Objeto que foi enviado na URL 
     let users = JSON.parse(req.params.data);    
     
