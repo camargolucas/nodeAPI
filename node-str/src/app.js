@@ -16,11 +16,11 @@ app.use(bodyParser.urlencoded({
 const indexRoute = require('./routes/index-route');
 const productRoute = require('./routes/product-route');
 const userRoute = require('./routes/user-route');
-
+const userAdminRoute = require('./routes/userAdmin-route');
 
 app.use('/', indexRoute);
 app.use('/products', productRoute);
 app.use('/users', userRoute);
-
+app.use('/usersAdmin', userAdminRoute);
 
 module.exports = app;
