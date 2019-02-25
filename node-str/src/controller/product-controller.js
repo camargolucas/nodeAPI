@@ -12,7 +12,7 @@ exports.getByName = function (req, res) {
 
     // Variavel que recebe a consulta SQL
     let query = "SELECT IDPRODUTO,NOMEPROD AS NAME, RTRIM(TIPO) AS TIPO FROM PRODUTO WHERE NOMEPROD LIKE'" + name + "%'"
-    sql.execSqlQuery(query, res)
+    sql.execSqlQueryClientReturn(query, res)
 
 };
 
@@ -27,7 +27,7 @@ exports.getById = function (req, res) {
     let query = "SELECT IDPRODUTO,NOMEPROD AS NAME, RTRIM(TIPO) AS TIPO FROM PRODUTO WHERE IDPRODUTO = " + id + ""
 
     // Execução da consulta
-    sql.execSqlQuery(query, res)
+    sql.execSqlQueryClientReturn(query, res)
 
 };
 
@@ -127,8 +127,6 @@ exports.insertPedido = function (req, res) {
 module.exports.getAll = function (req, res) {
 
     let query = "SELECT IDPRODUTO,NOMEPROD AS NAME, RTRIM(TIPO) AS TIPO FROM PRODUTO"
-    sql.execSqlQuery(query, res)
-        .then((sql) => {
+    sql.execSqlQueryClientReturn(query, res)
 
-        })
 }
