@@ -119,31 +119,9 @@ module.exports.getNewTokenLoginWithJWT = function (email, password, idUser){
         .replace(/\//g, '_')
         .replace(/=/g, '')
     //###############################################################
-
-    //console.log("token_gerado : " + base64Header + "." + base64Payload + "." + signatureUrl);
-    //###############################################################
     //Finalização da criação do TOKEN
     //Retorna o Token Gerado
-    getIdUserWithToken(base64Header + "." + base64Payload + "." + signatureUrl);
-
     return base64Header + "." + base64Payload + "." + signatureUrl;
-    /*
-    O Token gerado deve ser guardado em uma tabela para consulta posterir
-    Estrutura da tabela de autenticação, pode ser usada para bloquear um usuário
-    consultando o status 
-     ___________________________________________________
-    |                    user_login                     |
-    |___________________________________________________|
-    | id            int     11  autoincrement           |
-    | idUser     int     11  autoincrement index        |
-    | token         varchar 255 index                   |
-    | timestamp     varchar 255                         |
-    | status        int     11                          |
-    |___________________________________________________|
-    */
-
-    //console.log("token_gerado : " + token_gerado);
-    // console.log("TOKEN_VALIDO : " + ckeckJWTKeiIsValid(token_gerado));
 }
 //#############################################################
 //#############################################################
@@ -157,7 +135,9 @@ module.exports.getNewTokenLoginWithJWT = function (email, password, idUser){
 //#############################################################
 //Checa se a assinatura em HS256 é Válida, retorna TRUE 
 //para um TOKEN válido e FALSE para um token inválido
-function ckeckJWTKeiIsValid(token) {
+
+module.exports.checkJWTokenIsValid = function (token) {
+
 
     //###############################################################
     //###############################################################
@@ -177,11 +157,11 @@ function ckeckJWTKeiIsValid(token) {
     //###############################################################
 
     //Concatenação do cabeçalho e do corpo do Token
-    const data = base64Header + '.' + base64Payload;
+    let dataToken = base64Header + '.' + base64Payload;
 
-    const signature = crypto
+    let signature = crypto
         .createHmac('sha256', secret)
-        .update(data)
+        .update(dataToken)
         .digest('base64');
 
     const signatureUrl = signature
@@ -190,11 +170,9 @@ function ckeckJWTKeiIsValid(token) {
         .replace(/=/g, '')
 
 
-    let data = base64Payload;
-    let buff = new Buffer(data, 'base64');
+    let dataTokenAssinatura = base64Payload;
+    let buff = new Buffer(dataTokenAssinatura, 'base64');
     let text = buff.toString('ascii');
-
-    console.log(text);
 
     if (signatureUrl == key) {
         return true;
@@ -221,7 +199,8 @@ function ckeckJWTKeiIsValid(token) {
 
 //#############################################################
 //Obtendo o ID do usuário atravez do TOKEN gerado e enviado pelo usuário
-function getIdUserWithToken(token){
+
+module.exports.getIdUserWithToken = function ( token ){
 
     //###############################################################
     //Usando Split para separar o cabeçalho, o corpo e a assinatura do Token
