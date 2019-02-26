@@ -10,6 +10,7 @@ const formatDate = require('yyyy-mm-dd');
 // instancia da classe de configuracao sql 
 const sql = require('../db/sqlconfig');
 
+// ## JSON utilizado validação de login
 const statusLogin = {
     status: {
         '1': 'success',
@@ -69,6 +70,7 @@ exports.getLogin = function (req, res) {
         .then((ret) => {
             if (ret == '') {
 
+                // ## Caso usuário não esteja cadastrado...
                 let jsonRet
                 jsonRet = {
                     'userData': ret,
@@ -78,6 +80,7 @@ exports.getLogin = function (req, res) {
 
             } else {
 
+                // ## Se o usuário estiver cadastrado, crio um objeto com os dados do Usuário
                 let token = getNewTokenLoginWithJWT(ret[0]['senha'], ret[0]['senha'], ret[0]['idUsuario'])
                 var data = [{
                     "idUsuario": ret[0]['idUsuario'],
@@ -92,11 +95,13 @@ exports.getLogin = function (req, res) {
                 }];
 
                 let idUser = ret[0]['idUsuario']
+                // ## Verifico o dispositivo do Usuário
                 verifyUserDevice(idUser, UUID, data, res)
             }
         })
 };
 
+// ## Função que verificar se há repetições de dispositivos
 function verifyUserDevice(idUser, UUID, userDataResult, res) {
     let query = ""
     let jsonRet
@@ -108,6 +113,7 @@ function verifyUserDevice(idUser, UUID, userDataResult, res) {
             // ## então é inserido um novo UUID(id do Dispositivo) para ele na table PRE_LOGIN
             if (ret == '') {
 
+                // ## Insiro na tabela o ID do dispositivo do usuário que está logando
                 query = "INSERT INTO PRE_LOGIN(UUID, idUsuario) VALUES ('" + UUID + "', " + idUser + ")"
                 sql.execSqlQuery(query, res)
 
@@ -125,6 +131,7 @@ function verifyUserDevice(idUser, UUID, userDataResult, res) {
 
                     jsonRet = {
                         'userData': userDataResult,
+                        // ## status de autenticação bem sucedida
                         'status': statusLogin.status['1']
                     }
                     res.json(jsonRet)
@@ -133,6 +140,7 @@ function verifyUserDevice(idUser, UUID, userDataResult, res) {
 
                     jsonRet = {
                         'userData': userDataResult,
+                        // status de dispositivo inválido
                         'status': statusLogin.status['3']
                     }
 
