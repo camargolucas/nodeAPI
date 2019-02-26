@@ -10,6 +10,14 @@ const formatDate = require('yyyy-mm-dd');
 // instancia da classe de configuracao sql 
 const sql = require('../db/sqlconfig');
 
+const statusLogin = {
+    status: {
+        '1': 'success',
+        '2': 'invalid user',
+        '3': 'invalid device'
+    }
+}
+
 // #########################################################
 // ## Serviço para inserir dados de cadastro o Usuário ####
 /* exports.insertByObject = function (req, res) {
@@ -46,6 +54,7 @@ const sql = require('../db/sqlconfig');
 exports.getLogin = function (req, res) {
     let users = JSON.parse(req.params.data)
     let user = users.login
+    let UUID = users.UUID
     let password = users.password
     let query = ""
     // let senha = users.senha;
@@ -56,30 +65,84 @@ exports.getLogin = function (req, res) {
     } else {
         query = "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" + user + "' AND SENHA = '" + password + "' "
     }
-    sql.execSqlQueryLogin(query, res)
+    sql.execSqlQuery(query, res)
         .then((ret) => {
-            let idUser = ret[0]['idUsuario']
-            query = "SELECT UUID, idUsuario FROM PRE_LOGIN WHERE idUsuario = " + idUser + ""
+            if (ret == '') {
 
-            //verifyUserDevice(idUser, res)
+                let jsonRet
+                jsonRet = {
+                    'userData': ret,
+                    'status': statusLogin.status['2']
+                }
+                res.json(jsonRet)
+
+            } else {
+
+                let token = getNewTokenLoginWithJWT(ret[0]['senha'], ret[0]['senha'], ret[0]['idUsuario'])
+                var data = [{
+                    "idUsuario": ret[0]['idUsuario'],
+                    "nomeUsuario": ret[0]['nomeUsuario'],
+                    "senha":ret[0]['senha'],
+                    "loja": ret[0]['loja'],
+                    "idCargo": ret[0]['idCargo'],
+                    "ativo": ret[0]['ativo'],
+                    "apelidoUsuario": ret[0]['apelidoUsuario'],
+                    "token": token,
+                    "logado": 1
+                }];
+
+                let idUser = ret[0]['idUsuario']
+                verifyUserDevice(idUser, UUID, data, res)
+            }
         })
 };
 
-function verifyUserDevice(idUser, res) {
-
+function verifyUserDevice(idUser, UUID, userDataResult, res) {
+    let query = ""
+    let jsonRet
+    query = "SELECT UUID, idUsuario FROM PRE_LOGIN WHERE idUsuario = " + idUser + ""
     sql.execSqlQuery(query, res)
         .then((ret) => {
 
-            /*         if (ret == ''){
-                        // insere na pre login os dados do usuario
-                    }else{
-                        if(ret.UUID == UUID ){
-                            // permite logar
-                        }else{
-                            // dispositivo desconhecido
-                        }
-                    } */
+            // ## Se o retorno for vazio significa que o usuário não logou de nenhum dispositivo
+            // ## então é inserido um novo UUID(id do Dispositivo) para ele na table PRE_LOGIN
+            if (ret == '') {
+
+                query = "INSERT INTO PRE_LOGIN(UUID, idUsuario) VALUES ('" + UUID + "', " + idUser + ")"
+                sql.execSqlQuery(query, res)
+
+                jsonRet = {
+                    'userData': userDataResult,
+                    'status': statusLogin.status['1']
+                }
+                res.json(jsonRet)
+
+            } else {
+                // ## Caso ele ja tenha acessado o sistema de algum dispositivo
+                // ## verifico se o dispositivo em que ele está logando é o mesmo que ele utilizou
+                // ## da ultima vez que acessou o sistema.
+                if (ret[0]['UUID'] == UUID) {
+
+                    jsonRet = {
+                        'userData': userDataResult,
+                        'status': statusLogin.status['1']
+                    }
+                    res.json(jsonRet)
+
+                } else {
+
+                    jsonRet = {
+                        'userData': userDataResult,
+                        'status': statusLogin.status['3']
+                    }
+
+                    // ## Se for dispositivo diferente, não possibilito o acesso dele
+                    res.json(jsonRet)
+
+                }
+            }
         })
+
 }
 
 module.exports.getByName = function (res, req) {
@@ -93,7 +156,7 @@ module.exports.getByName = function (res, req) {
 //#############################################################
 //#############################################################
 //GERAÇÃO DE TOKEN USANDO JWT ASSINADO COM HS256/SHA256
-module.exports.getNewTokenLoginWithJWT = function (email, password, idUser) {
+function getNewTokenLoginWithJWT  (email, password, idUser) {
 
     //###############################################################
     //Definição do Cabeçalho com padrão de codificação do Token
@@ -281,7 +344,7 @@ exports.getSentStock = function (req, res) {
 
 
     let query = "SELECT COUNT(idEstoque) ENVIOS FROM PRE_ESTOQUE WHERE IDUSUARIO = " + idUsuario + " AND dataEstoque = '" + dateNow + "' "
-    sql.execSqlQueryClientReturn(query, res)       
+    sql.execSqlQueryClientReturn(query, res)
 };
 
 // #################################################################################
