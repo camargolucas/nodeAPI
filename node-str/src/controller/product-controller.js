@@ -3,6 +3,9 @@
 const sql = require('../db/sqlconfig');
 const formatDate = require('yyyy-mm-dd');
 const userController = require('../controller/user-controller');
+const util = require('../../utils/utils')
+
+//module.exports = retornoJson;
 
 // ####################################################
 // ## Método que busca produto pelo nome ##############
@@ -43,7 +46,7 @@ exports.insertEstoque = function (req, res) {
     let dataEnvio = dataRet.dataEnvio;
     let tokenUsuario = dataRet.tokenUsuario;
     //Verifica se o Token enviado pelo usuário é Válido
-    if( userController.checkJWTokenIsValid( tokenUsuario )  == true ){
+    if (userController.checkJWTokenIsValid(tokenUsuario) == true) {
 
         //Obtendo o Id do usuário pelo Token enviado, isso somente após verificar se o Token é Válido
         let idUsuario = userController.getIdUserWithToken(tokenUsuario);
@@ -73,12 +76,14 @@ exports.insertEstoque = function (req, res) {
 
                     // Insiro os dados na PRE_ESTOQUE_DETALHADO
                     queryInsertDetalhado = "INSERT INTO PRE_ESTOQUE_DETALHADO (idEstoque, idProduto, quantidade, unidade) VALUES (" + idEstoque + "," + idProduto + "," + qtd + ",'" + und + "') "
-
                     sql.execSqlQuery(queryInsertDetalhado, res)
+                        .then(() => {                            
+                            res.json(util.jsonStatusReturn['success'])                                                       
+                        })
                 });
             })
-            .catch((err) => {
-                console.log(err)
+            .catch((err) => {              
+                res.json(util.jsonStatusReturn['error'])                                                
             })
 
     }
@@ -96,10 +101,10 @@ exports.insertPedido = function (req, res) {
     let tokenUsuario = dataRet.tokenUsuario;
 
     //Verifica se o Token enviado pelo usuário é Válido
-    if( userController.checkJWTokenIsValid(tokenUsuario)  == true ){
+    if (userController.checkJWTokenIsValid(tokenUsuario) == true) {
         //Obtendo o Id do usuário pelo Token enviado, isso somente após verificar se o Token é Válido
         let idUsuario = userController.getIdUserWithToken(tokenUsuario);
-    
+
         // Formatando a data para inserção no SQL : yyyy/MM/dd
         let date = new Date();
         date = formatDate(new Date(date.toISOString(dataEnvio)))
@@ -126,15 +131,20 @@ exports.insertPedido = function (req, res) {
                     // Insiro os dados na PRE_ESTOQUE_DETALHADO
                     queryInsertDetalhado = "INSERT INTO PRE_PEDIDO_DETALHADO (idPedido, idProduto, quantidade, unidade) VALUES (" + idPedido + "," + idProduto + "," + qtd + ",'" + und + "') "
                     sql.execSqlQuery(queryInsertDetalhado, res)
+                        .then(() => {                                                                     
+                            res.json(util.jsonStatusReturn['success'])                              
+                        })
+                      
+                        
                 });
             })
-            .catch((err) => {
-                console.log(err)
+            .catch(()=>{
+                res.json(util.jsonStatusReturn['error'])   
             })
     }
 }
 
-// ###########################################################
+// #################////////##########################################
 // ## Função utilizada para resgatar todos os Produtos #######
 module.exports.getAll = function (req, res) {
 

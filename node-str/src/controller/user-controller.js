@@ -139,7 +139,7 @@ function verifyUserDevice(idUser, UUID, userDataResult, res) {
                 } else {
 
                     jsonRet = {
-                        'userData': userDataResult,
+                        'userData': '',
                         // status de dispositivo inválido
                         'status': statusLogin.status['3']
                     }
@@ -331,6 +331,7 @@ exports.getSentStock = function (req, res) {
 
 
     let query = "SELECT COUNT(idEstoque) ENVIOS FROM PRE_ESTOQUE WHERE IDUSUARIO = " + idUsuario + " AND dataEstoque = '" + dateNow + "' "
+    console.log(query)
     sql.execSqlQueryClientReturn(query, res)
 };
 
