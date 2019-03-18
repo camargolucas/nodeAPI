@@ -5,6 +5,7 @@
 const router = require('./route-config')
 const controller = require('../controller/product-controller');
 
+
 router.get('/search/name/:name', controller.getByName);
 router.get('/search/cod/:id', controller.getById);
 router.post('/insertEstoque/:data', controller.insertEstoque);

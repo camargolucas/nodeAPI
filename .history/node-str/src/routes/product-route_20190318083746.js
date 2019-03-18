@@ -5,9 +5,10 @@
 const router = require('./route-config')
 const controller = require('../controller/product-controller');
 
+
 router.get('/search/name/:name', controller.getByName);
 router.get('/search/cod/:id', controller.getById);
-router.post('/insertEstoque/:data', controller.insertEstoque);
-router.post('/insertPedido/:data', controller.insertPedido);
+router.post('/insertEstoque/:data', controller.insertEstoque)
+router.post('/insertPedido/:data', controller.insertPedido)
 router.get('/getAll', controller.getAll);
 module.exports = router;

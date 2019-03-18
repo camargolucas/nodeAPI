@@ -17,7 +17,6 @@ app.use(bodyParser.urlencoded({
 const indexRoute = require('./routes/index-route');
 const productRoute = require('./routes/product-route');
 const userRoute = require('./routes/user-route');
-const adminRoute = require('./routes/admin-route');
 
 // "/products" - Cabeça da rota, onde diferencio cada rota.
 // Obs: Toda vez que for criar um novo tipo de pesquisa / utilização da API, voce deve criar
@@ -27,7 +26,6 @@ const adminRoute = require('./routes/admin-route');
 app.use('/', indexRoute);
 app.use('/products', productRoute);
 app.use('/users', userRoute); 
-app.use('/admin', adminRoute); 
 
 
 module.exports = app;
