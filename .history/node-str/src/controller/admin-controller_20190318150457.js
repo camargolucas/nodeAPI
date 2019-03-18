@@ -2,7 +2,7 @@
 
 const sql = require('../db/sqlconfig');
 const TABLE_ECONOMIC_GROUP_CLIENT_LIST = "GRUPO_ECONOMICO_CLIENTE";
-const TABLE_CLIENT_LIST = "CLIENTE_FORNECEDOR";
+const TABLE_CLIENT_LIST = "CLIENTE";
 
 
 exports.getEconomicGroupList = function(req, res) {
@@ -10,6 +10,6 @@ exports.getEconomicGroupList = function(req, res) {
     sql.execSqlQueryClientReturn(query, res);
 }
 exports.getClientList = function(req, res) {
-let query ="SELECT * FROM " + TABLE_CLIENT_LIST + " ORDER BY CODIGO ASC";
+    let query ="SELECT * FROM " + TABLE_CLIENT_LIST;
     sql.execSqlQueryClientReturn(query, res);
 }

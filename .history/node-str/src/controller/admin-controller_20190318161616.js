@@ -10,6 +10,6 @@ exports.getEconomicGroupList = function(req, res) {
     sql.execSqlQueryClientReturn(query, res);
 }
 exports.getClientList = function(req, res) {
-let query ="SELECT * FROM " + TABLE_CLIENT_LIST + " ORDER BY CODIGO ASC";
+    let query ="SELECT * FROM " + TABLE_CLIENT_LIST;
     sql.execSqlQueryClientReturn(query, res);
 }
