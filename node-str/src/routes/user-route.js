@@ -13,6 +13,7 @@ router.get('/get/:data', controller.getLogin)
 router.get('/getByName/:data', controller.getByName)
 router.get('/getSentStock/:data', controller.getSentStock)
 router.get('/getSentRequest/:data', controller.getSentRequest)
+router.get('/getAllUsers', controller.getAllUsers)
 
 
 module.exports = router;
