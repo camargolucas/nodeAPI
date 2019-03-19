@@ -3,7 +3,7 @@
 //Importação da Classe Crypto necessária para
 //o sistema de geração de Tokens de acesso JWT
 const crypto = require("crypto");
-
+const util = require('../../utils/utils')
 //##################################################
 const formatDate = require("yyyy-mm-dd");
 
@@ -51,7 +51,7 @@ const statusLogin = {
 
 // ################################################
 // ## Função que verifica o LOGIN do usuário ######
-exports.getLogin = function(req, res) {
+exports.getLogin = function (req, res) {
   let users = JSON.parse(req.params.data);
   let user = users.login;
   let UUID = users.UUID;
@@ -91,19 +91,17 @@ exports.getLogin = function(req, res) {
         ret[0]["senha"],
         ret[0]["idUsuario"]
       );
-      var data = [
-        {
-          idUsuario: ret[0]["idUsuario"],
-          nomeUsuario: ret[0]["nomeUsuario"],
-          senha: ret[0]["senha"],
-          loja: ret[0]["loja"],
-          idCargo: ret[0]["idCargo"],
-          ativo: ret[0]["ativo"],
-          apelidoUsuario: ret[0]["apelidoUsuario"],
-          token: token,
-          logado: 1
-        }
-      ];
+      var data = [{
+        idUsuario: ret[0]["idUsuario"],
+        nomeUsuario: ret[0]["nomeUsuario"],
+        senha: ret[0]["senha"],
+        loja: ret[0]["loja"],
+        idCargo: ret[0]["idCargo"],
+        ativo: ret[0]["ativo"],
+        apelidoUsuario: ret[0]["apelidoUsuario"],
+        token: token,
+        logado: 1
+      }];
 
       let idUser = ret[0]["idUsuario"];
       // ## Verifico o dispositivo do Usuário
@@ -161,7 +159,7 @@ function verifyUserDevice(idUser, UUID, userDataResult, res) {
   });
 }
 
-module.exports.getByName = function(res, req) {};
+module.exports.getByName = function (res, req) {};
 
 //#############################################################
 //#############################################################
@@ -233,7 +231,7 @@ function getNewTokenLoginWithJWT(email, password, idUser) {
 //Checa se a assinatura em HS256 é Válida, retorna TRUE
 //para um TOKEN válido e FALSE para um token inválido
 
-module.exports.checkJWTokenIsValid = function(token) {
+module.exports.checkJWTokenIsValid = function (token) {
   //###############################################################
   //###############################################################
   //Definição da chave secreta de geração da assinatura do Token
@@ -294,7 +292,7 @@ module.exports.checkJWTokenIsValid = function(token) {
 //#############################################################
 //Obtendo o ID do usuário atravez do TOKEN gerado e enviado pelo usuário
 
-module.exports.getIdUserWithToken = function(token) {
+module.exports.getIdUserWithToken = function (token) {
   //###############################################################
   //Usando Split para separar o cabeçalho, o corpo e a assinatura do Token
   let token_res = token.split(".");
@@ -318,7 +316,7 @@ module.exports.getIdUserWithToken = function(token) {
 
 // #################################################################################
 // ## Função utilizada para verificar se foi enviado estoque pelo Usuário logado ###
-exports.getSentStock = function(req, res) {
+exports.getSentStock = function (req, res) {
   let userData = JSON.parse(req.params.data);
   let idUsuario = userData["idUsuario"];
   let data = userData["data"];
@@ -336,15 +334,15 @@ exports.getSentStock = function(req, res) {
   sql.execSqlQueryClientReturn(query, res);
 };
 
-exports.getAllUsers = function(req, res) {
+exports.getAllUsers = function (req, res) {
   let query =
-    "SELECT idUsuario, nomeUsuario, email, apelidoUsuario FROM PRE_USUARIO";
+    "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo FROM PRE_USUARIO";
   sql.execSqlQueryClientReturn(query, res);
 };
 
 // #################################################################################
 // ## Função utilizada para verificar se foi enviado Pedido pelo Usuário logado ###
-exports.getSentRequest = function(req, res) {
+exports.getSentRequest = function (req, res) {
   let userData = JSON.parse(req.params.data);
   let idUsuario = userData["idUsuario"];
   let data = userData["data"];
@@ -360,3 +358,31 @@ exports.getSentRequest = function(req, res) {
     "' ";
   sql.execSqlQueryClientReturn(query, res);
 };
+
+
+exports.updateUser = function (req, res) {
+
+  let userData = JSON.parse(req.params.data)
+
+
+  let nomeUsuario = userData.nomeUsuario;
+  let email = userData.email;
+  let loja = userData.loja;
+  let apelidoUsuario = userData.apelidoUsuario;
+  let idUsuario = userData.idUsuario
+
+  let query = "UPDATE PRE_USUARIO SET nomeUsuario = '" +
+    nomeUsuario +
+    "', email = '" +
+    email +
+    "', loja = " +
+    loja +
+    ", apelidoUsuario = '" +
+    apelidoUsuario +
+    "' WHERE idUsuario = " + idUsuario + " "
+
+  sql.execSqlQuery(query, res)
+    .then(() => {
+      res.json(util.jsonStatusReturn['success'])
+    })
+}
