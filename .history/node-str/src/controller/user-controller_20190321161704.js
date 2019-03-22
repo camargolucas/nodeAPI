@@ -335,7 +335,8 @@ exports.getSentStock = function (req, res) {
 };
 
 exports.getAllUsers = function (req, res) {
-  let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo FROM PRE_USUARIO WHERE idCargo = 1";
+  let query =
+    "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo FROM PRE_USUARIO WHERE idCargo = 1";
   sql.execSqlQueryClientReturn(query, res);
 };
 

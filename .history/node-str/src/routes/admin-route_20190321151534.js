@@ -5,6 +5,5 @@ const controller = require('../controller/admin-controller');
 
 router.get('/economic-group-list/getAll', controller.getEconomicGroupList);
 router.get('/client/getAll', controller.getClientList);
-router.post('/user/create/manager/:data', controller.createNewManagerAccount);
-router.post('/user/create/:data', controller.createNewUserAccount);
+router.get('/user/create/manager/:data', controller.createNewManagerAccount);
 module.exports = router;

@@ -14,6 +14,6 @@ router.get('/getByName/:data', controller.getByName)
 router.get('/getSentStock/:data', controller.getSentStock)
 router.get('/getSentRequest/:data', controller.getSentRequest)
 router.get('/getAllUsers', controller.getAllUsers)
-
+router.put('/updateUser/:data', controller.updateUser)
 
 module.exports = router;
