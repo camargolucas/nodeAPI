@@ -333,10 +333,12 @@ exports.getSentStock = function (req, res) {
   console.log(query);
   sql.execSqlQueryClientReturn(query, res);
 };
+
 exports.getAllUsers = function (req, res) {
   let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo, ativo FROM PRE_USUARIO WHERE idCargo = 1";
   sql.execSqlQueryClientReturn(query, res);
 };
+
 // #################################################################################
 // ## Função utilizada para verificar se foi enviado Pedido pelo Usuário logado ###
 exports.getSentRequest = function (req, res) {

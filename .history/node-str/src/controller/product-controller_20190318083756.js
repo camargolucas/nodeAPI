@@ -6,6 +6,7 @@ const userController = require('../controller/user-controller');
 const util = require('../../utils/utils')
 
 //module.exports = retornoJson;
+
 // ####################################################
 // ## Método que busca produto pelo nome ##############
 exports.getByName = function (req, res) {

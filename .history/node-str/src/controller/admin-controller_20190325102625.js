@@ -9,10 +9,12 @@ exports.getEconomicGroupList = function(req, res) {
     let query ="SELECT idGrupoEconomicoCliente, nomeGrupoEconomicoCliente, idCategoriaCliente FROM " + TABLE_ECONOMIC_GROUP_CLIENT_LIST;
     sql.execSqlQueryClientReturn(query, res);
 }
+
 exports.getClientList = function(req, res) {
     let query ="SELECT * FROM " + TABLE_CLIENT_LIST + " ORDER BY CODIGO ASC";
     sql.execSqlQueryClientReturn(query, res);
 }
+
 exports.createNewManagerAccount = function(req, res) {
 
     let userData = JSON.parse(req.params.data);
@@ -43,6 +45,7 @@ exports.createNewManagerAccount = function(req, res) {
         return res.json(util.jsonStatusReturn['error']);
     }
 }
+
 exports.createNewUserAccount = function(req, res) {
 
     let userData = JSON.parse(req.params.data);
@@ -73,24 +76,16 @@ exports.createNewUserAccount = function(req, res) {
         return res.json(util.jsonStatusReturn['error']);
     }
 }
+
 exports.blockUser = function(req, res){
 
     let userData = JSON.parse(req.params.data)
     let idUsuario = userData.idUsuario
-    let ativo = userData.ativo;
-    let query ="";
-
-    if(ativo == "1"){
-        query = "UPDATE PRE_USUARIO SET ativo = 0 WHERE idUsuario = " + idUsuario;
-    }else{
-        query = "UPDATE PRE_USUARIO SET ativo = 1 WHERE idUsuario = " + idUsuario;
-    }
+  
+    let query = "UPDATE PRE_USUARIO SET ativo = 1 WHERE idUsuario = " + idUsuario;
+  
     sql.execSqlQuery(query, res)
       .then(() => {
         res.json(util.jsonStatusReturn['success'])
       })
-}
-exports.getAllManagerList = function(req, res){
-    let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo, ativo FROM PRE_USUARIO WHERE idCargo = 2";
-    sql.execSqlQueryClientReturn(query, res);
 }

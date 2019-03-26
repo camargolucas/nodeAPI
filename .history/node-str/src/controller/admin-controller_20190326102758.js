@@ -9,10 +9,12 @@ exports.getEconomicGroupList = function(req, res) {
     let query ="SELECT idGrupoEconomicoCliente, nomeGrupoEconomicoCliente, idCategoriaCliente FROM " + TABLE_ECONOMIC_GROUP_CLIENT_LIST;
     sql.execSqlQueryClientReturn(query, res);
 }
+
 exports.getClientList = function(req, res) {
     let query ="SELECT * FROM " + TABLE_CLIENT_LIST + " ORDER BY CODIGO ASC";
     sql.execSqlQueryClientReturn(query, res);
 }
+
 exports.createNewManagerAccount = function(req, res) {
 
     let userData = JSON.parse(req.params.data);
@@ -43,6 +45,7 @@ exports.createNewManagerAccount = function(req, res) {
         return res.json(util.jsonStatusReturn['error']);
     }
 }
+
 exports.createNewUserAccount = function(req, res) {
 
     let userData = JSON.parse(req.params.data);
@@ -73,6 +76,7 @@ exports.createNewUserAccount = function(req, res) {
         return res.json(util.jsonStatusReturn['error']);
     }
 }
+
 exports.blockUser = function(req, res){
 
     let userData = JSON.parse(req.params.data)
