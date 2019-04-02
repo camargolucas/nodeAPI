@@ -21,12 +21,12 @@ module.exports.execSqlQuery = function (query, res) {
             }).then(result => {
                 // Retorno o resultado da consulta para o servidor para ser utilizado dentro do servidor
                 // para validações etc
-                console.log(query)
+
                 resolve(result.recordset)
                 // fecho a conexão 
                 sql.close();
             })
-            .catch((err) => {                            
+            .catch((err) => {
                 res.json(util.jsonStatusReturn['error'])
 
             })
@@ -41,18 +41,17 @@ module.exports.execSqlQueryClientReturn = function (query, res) {
     return new Promise(function (resolve) {
 
         new sql.ConnectionPool(sqlConfig).connect().then(pool => {
-            return pool.request().query(query)
-        }).then(result => {
-           
-            // Retorno o resultado para a consulta para o cliente
-            res.json((result.recordset))
+                return pool.request().query(query)
+            }).then(result => {
+                // Retorno o resultado para a consulta para o cliente
+                res.json((result.recordset))
 
-            // fecho a conexão 
-            sql.close();
-        })
-        .catch(()=>{
-            res.json(util.jsonStatusReturn['error'])
-        })
+                // fecho a conexão 
+                sql.close();
+            })
+            .catch(() => {
+                res.json(util.jsonStatusReturn['error'])
+            })
 
     })
 }
