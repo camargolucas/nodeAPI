@@ -51,7 +51,7 @@ const statusLogin = {
 
 // ################################################
 // ## Função que verifica o LOGIN do usuário ######
-exports.getLogin = function(req, res) {
+exports.getLogin = function (req, res) {
   let users = JSON.parse(req.params.data);
   let user = users.login;
   let UUID = users.UUID;
@@ -62,14 +62,14 @@ exports.getLogin = function(req, res) {
   // Verifico se existe o caracter @ na string para saber se é um email
   if (user.search("@") == -1) {
     query =
-      "SELECT idUsuario, LTRIM(nomeUsuario), email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" +
+      "SELECT idUsuario, LTRIM(nomeUsuario), email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" +
       user +
       "' AND SENHA = '" +
       password +
       "' ";
   } else {
     query =
-      "SELECT idUsuario, LTRIM(nomeUsuario), email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" +
+      "SELECT idUsuario, LTRIM(nomeUsuario), email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" +
       user +
       "' AND SENHA = '" +
       password +
@@ -93,20 +93,18 @@ exports.getLogin = function(req, res) {
       );
 
       // ## Se o usuário estiver cadastrado, crio um objeto com os dados do Usuário
-      var data = [
-        {
-          idUsuario: ret[0]["idUsuario"],
-          nomeUsuario: ret[0]["nomeUsuario"],
-          email: ret[0]["email"],
-          senha: ret[0]["senha"],
-          loja: ret[0]["loja"],
-          idCargo: ret[0]["idCargo"],
-          ativo: ret[0]["ativo"],
-          apelidoUsuario: ret[0]["apelidoUsuario"],
-          token: token,
-          logado: 1
-        }
-      ];
+      var data = [{
+        idUsuario: ret[0]["idUsuario"],
+        nomeUsuario: ret[0]["nomeUsuario"],
+        email: ret[0]["email"],
+        senha: ret[0]["senha"],
+        grupoEconomico: ret[0]["grupoEconomico"],
+        idCargo: ret[0]["idCargo"],
+        ativo: ret[0]["ativo"],
+        apelidoUsuario: ret[0]["apelidoUsuario"],
+        token: token,
+        logado: 1
+      }];
 
       let idUser = ret[0]["idUsuario"];
       // ## Verifico o dispositivo do Usuário
@@ -164,7 +162,7 @@ function verifyUserDevice(idUser, UUID, userDataResult, res) {
   });
 }
 
-module.exports.getByName = function(res, req) {};
+module.exports.getByName = function (res, req) {};
 
 //#############################################################
 //#############################################################
@@ -236,7 +234,7 @@ function getNewTokenLoginWithJWT(email, password, idUser) {
 //Checa se a assinatura em HS256 é Válida, retorna TRUE
 //para um TOKEN válido e FALSE para um token inválido
 
-module.exports.checkJWTokenIsValid = function(token) {
+module.exports.checkJWTokenIsValid = function (token) {
   //###############################################################
   //###############################################################
   //Definição da chave secreta de geração da assinatura do Token
@@ -297,7 +295,7 @@ module.exports.checkJWTokenIsValid = function(token) {
 //#############################################################
 //Obtendo o ID do usuário atravez do TOKEN gerado e enviado pelo usuário
 
-module.exports.getIdUserWithToken = function(token) {
+module.exports.getIdUserWithToken = function (token) {
   //###############################################################
   //Usando Split para separar o cabeçalho, o corpo e a assinatura do Token
   let token_res = token.split(".");
@@ -321,7 +319,7 @@ module.exports.getIdUserWithToken = function(token) {
 
 // #################################################################################
 // ## Função utilizada para verificar se foi enviado estoque pelo Usuário logado ###
-exports.getSentStock = function(req, res) {
+exports.getSentStock = function (req, res) {
   let userData = JSON.parse(req.params.data);
   let idUsuario = userData["idUsuario"];
   let data = userData["data"];
@@ -339,15 +337,15 @@ exports.getSentStock = function(req, res) {
   sql.execSqlQueryClientReturn(query, res);
 };
 
-exports.getAllUsers = function(req, res) {
+exports.getAllUsers = function (req, res) {
   let query =
-    "SELECT idUsuario, LRIM(nomeUsuario), email, apelidoUsuario, loja, idCargo FROM PRE_USUARIO";
+    "SELECT idUsuario, LRIM(nomeUsuario), email, apelidoUsuario, grupoEconomico, idCargo FROM PRE_USUARIO";
   sql.execSqlQueryClientReturn(query, res);
 };
 
 // #################################################################################
 // ## Função utilizada para verificar se foi enviado Pedido pelo Usuário logado ###
-exports.getSentRequest = function(req, res) {
+exports.getSentRequest = function (req, res) {
   let userData = JSON.parse(req.params.data);
   let idUsuario = userData["idUsuario"];
   let data = userData["data"];
@@ -364,22 +362,22 @@ exports.getSentRequest = function(req, res) {
   sql.execSqlQueryClientReturn(query, res);
 };
 
-exports.getSentStockByShop = function(req, res) {
-  let loja = JSON.parse(req.params.data);
+exports.getSentStockByShop = function (req, res) {
+  let grupoEconomico = JSON.parse(req.params.data);
 
   let query =
-    "select P.nomeProd as 'nome', SUM(quantidade) as 'qtd', unidade, tipo from PRE_ESTOQUE PREE INNER JOIN PRE_USUARIO PRE ON PRE.idUsuario = PREE.idUsuario INNER JOIN PRE_ESTOQUE_DETALHADO PD ON PD.idEstoque = pree.idEstoque INNER JOIN PRODUTO P ON P.idProduto = PD.idProduto WHERE loja = " +
-    loja +
+    "select P.nomeProd as 'nome', SUM(quantidade) as 'qtd', unidade, tipo from PRE_ESTOQUE PREE INNER JOIN PRE_USUARIO PRE ON PRE.idUsuario = PREE.idUsuario INNER JOIN PRE_ESTOQUE_DETALHADO PD ON PD.idEstoque = pree.idEstoque INNER JOIN PRODUTO P ON P.idProduto = PD.idProduto WHERE grupoEconomico = " +
+    grupoEconomico +
     " GROUP BY P.nomeProd, unidade, tipo";
   sql.execSqlQueryClientReturn(query, res);
 };
 
-exports.updateUser = function(req, res) {
+exports.updateUser = function (req, res) {
   let userData = JSON.parse(req.params.data);
 
   let nomeUsuario = userData.nomeUsuario;
   let email = userData.email;
-  let loja = userData.loja;
+  let grupoEconomico = userData.grupoEconomico;
   let apelidoUsuario = userData.apelidoUsuario;
   let idUsuario = userData.idUsuario;
 
@@ -388,8 +386,8 @@ exports.updateUser = function(req, res) {
     nomeUsuario +
     "', email = '" +
     email +
-    "', loja = " +
-    loja +
+    "', grupoEconomico = " +
+    grupoEconomico +
     ", apelidoUsuario = '" +
     apelidoUsuario +
     "' WHERE idUsuario = " +
