@@ -15,5 +15,6 @@ router.get('/getSentStock/:data', controller.getSentStock)
 router.get('/getSentRequest/:data', controller.getSentRequest)
 router.get('/getAllUsers', controller.getAllUsers)
 router.put('/updateUser/:data', controller.updateUser)
+router.get('/getSentStockByShop/:data', controller.getSentStockByShop)
 
 module.exports = router;

@@ -3,7 +3,7 @@
 //Importação da Classe Crypto necessária para
 //o sistema de geração de Tokens de acesso JWT
 const crypto = require("crypto");
-const util = require('../../utils/utils')
+const util = require("../../utils/utils");
 //##################################################
 const formatDate = require("yyyy-mm-dd");
 
@@ -29,7 +29,7 @@ const statusLogin = {
     let nomeUsuario = users.nomeUsuario;
     let email = users.email;
     let senha = users.senha;
-    let loja = users.loja;
+    let    = users.loja;
     let apelidoUsuario = users.apelidoUsuario;
 
     // Verificação se ja existe usuario cadastrado 
@@ -62,14 +62,14 @@ exports.getLogin = function (req, res) {
   // Verifico se existe o caracter @ na string para saber se é um email
   if (user.search("@") == -1) {
     query =
-      "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" +
+      "SELECT idUsuario, LTRIM(nomeUsuario), email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" +
       user +
       "' AND SENHA = '" +
       password +
       "' ";
   } else {
     query =
-      "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" +
+      "SELECT idUsuario, LTRIM(nomeUsuario), email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" +
       user +
       "' AND SENHA = '" +
       password +
@@ -85,17 +85,20 @@ exports.getLogin = function (req, res) {
       };
       res.json(jsonRet);
     } else {
-      // ## Se o usuário estiver cadastrado, crio um objeto com os dados do Usuário
+      // ## Geração de Token para o usuário
       let token = getNewTokenLoginWithJWT(
-        ret[0]["senha"],
+        ret[0]["email"],
         ret[0]["senha"],
         ret[0]["idUsuario"]
       );
+
+      // ## Se o usuário estiver cadastrado, crio um objeto com os dados do Usuário
       var data = [{
         idUsuario: ret[0]["idUsuario"],
         nomeUsuario: ret[0]["nomeUsuario"],
+        email: ret[0]["email"],
         senha: ret[0]["senha"],
-        loja: ret[0]["loja"],
+        grupoEconomico: ret[0]["grupoEconomico"],
         idCargo: ret[0]["idCargo"],
         ativo: ret[0]["ativo"],
         apelidoUsuario: ret[0]["apelidoUsuario"],
@@ -335,7 +338,8 @@ exports.getSentStock = function (req, res) {
 };
 
 exports.getAllUsers = function (req, res) {
-  let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo FROM PRE_USUARIO WHERE idCargo = 1";
+  let query =
+    "SELECT idUsuario, LRIM(nomeUsuario), email, apelidoUsuario, grupoEconomico, idCargo FROM PRE_USUARIO";
   sql.execSqlQueryClientReturn(query, res);
 };
 
@@ -358,30 +362,39 @@ exports.getSentRequest = function (req, res) {
   sql.execSqlQueryClientReturn(query, res);
 };
 
+exports.getSentStockByShop = function (req, res) {
+  let grupoEconomico = JSON.parse(req.params.data);
+
+  let query =
+    "select P.nomeProd as 'nome', SUM(quantidade) as 'qtd', unidade, tipo from PRE_ESTOQUE PREE INNER JOIN PRE_USUARIO PRE ON PRE.idUsuario = PREE.idUsuario INNER JOIN PRE_ESTOQUE_DETALHADO PD ON PD.idEstoque = pree.idEstoque INNER JOIN PRODUTO P ON P.idProduto = PD.idProduto WHERE grupoEconomico = " +
+    grupoEconomico +
+    " GROUP BY P.nomeProd, unidade, tipo";
+  sql.execSqlQueryClientReturn(query, res);
+};
 
 exports.updateUser = function (req, res) {
-
-  let userData = JSON.parse(req.params.data)
-
+  let userData = JSON.parse(req.params.data);
 
   let nomeUsuario = userData.nomeUsuario;
   let email = userData.email;
-  let loja = userData.loja;
+  let grupoEconomico = userData.grupoEconomico;
   let apelidoUsuario = userData.apelidoUsuario;
-  let idUsuario = userData.idUsuario
+  let idUsuario = userData.idUsuario;
 
-  let query = "UPDATE PRE_USUARIO SET nomeUsuario = '" +
+  let query =
+    "UPDATE PRE_USUARIO SET nomeUsuario = '" +
     nomeUsuario +
     "', email = '" +
     email +
-    "', loja = " +
-    loja +
+    "', grupoEconomico = " +
+    grupoEconomico +
     ", apelidoUsuario = '" +
     apelidoUsuario +
-    "' WHERE idUsuario = " + idUsuario + " "
+    "' WHERE idUsuario = " +
+    idUsuario +
+    " ";
 
-  sql.execSqlQuery(query, res)
-    .then(() => {
-      res.json(util.jsonStatusReturn['success'])
-    })
-}
+  sql.execSqlQuery(query, res).then(() => {
+    res.json(util.jsonStatusReturn["success"]);
+  });
+};
