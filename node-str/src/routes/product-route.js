@@ -10,4 +10,5 @@ router.get('/search/cod/:id', controller.getById);
 router.post('/insertEstoque/:data', controller.insertEstoque);
 router.post('/insertPedido/:data', controller.insertPedido);
 router.get('/getAll', controller.getAll);
+router.get('/getAllEstoque', controller.getEstoqueAll);
 module.exports = router;

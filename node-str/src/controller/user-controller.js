@@ -62,14 +62,14 @@ exports.getLogin = function (req, res) {
   // Verifico se existe o caracter @ na string para saber se é um email
   if (user.search("@") == -1) {
     query =
-      "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" +
+      "SELECT idUsuario, nomeUsuario, email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE apelidoUsuario = '" +
       user +
       "' AND SENHA = '" +
       password +
       "' ";
   } else {
     query =
-      "SELECT idUsuario, nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" +
+      "SELECT idUsuario, nomeUsuario, email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario FROM PRE_USUARIO WHERE EMAIL = '" +
       user +
       "' AND SENHA = '" +
       password +
@@ -334,7 +334,7 @@ exports.getSentStock = function (req, res) {
   sql.execSqlQueryClientReturn(query, res);
 };
 exports.getAllUsers = function (req, res) {
-  let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo, ativo FROM PRE_USUARIO WHERE idCargo = 1";
+  let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, grupoEconomico, idCargo, ativo FROM PRE_USUARIO WHERE idCargo = 1";
   sql.execSqlQueryClientReturn(query, res);
 };
 // #################################################################################
@@ -360,8 +360,6 @@ exports.getSentRequest = function (req, res) {
 exports.updateUser = function (req, res) {
 
   let userData = JSON.parse(req.params.data)
-
-
   let nomeUsuario = userData.nomeUsuario;
   let email = userData.email;
   let loja = userData.loja;
@@ -372,7 +370,7 @@ exports.updateUser = function (req, res) {
     nomeUsuario +
     "', email = '" +
     email +
-    "', loja = " +
+    "', grupoEconomico = " +
     loja +
     ", apelidoUsuario = '" +
     apelidoUsuario +

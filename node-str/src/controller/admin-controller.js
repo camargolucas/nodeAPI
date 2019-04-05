@@ -31,7 +31,7 @@ exports.createNewManagerAccount = function(req, res) {
 
     if(email != null && email!= undefined && email != ""){
 
-        let query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario, envioDiario) VALUES ('"+nomeUsuario+"', '"+email+"', '"+senha+"', "+loja+", "+idCargo+", "+ativo+", '"+apelidoUsuario+"', "+envioDiario+")";
+        let query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario, envioDiario) VALUES ('"+nomeUsuario+"', '"+email+"', '"+senha+"', "+loja+", "+idCargo+", "+ativo+", '"+apelidoUsuario+"', "+envioDiario+")";
 
         console.log("userData : " + senha);
 
@@ -61,9 +61,7 @@ exports.createNewUserAccount = function(req, res) {
 
     if(email != null && email!= undefined && email != ""){
 
-        let query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, loja, idCargo, ativo, apelidoUsuario, envioDiario) VALUES ('"+nomeUsuario+"', '"+email+"', '"+senha+"', "+loja+", "+idCargo+", "+ativo+", '"+apelidoUsuario+"', "+envioDiario+")";
-
-        console.log("userData : " + senha);
+        let query = "INSERT INTO PRE_USUARIO (nomeUsuario, email, senha, grupoEconomico, idCargo, ativo, apelidoUsuario, envioDiario) VALUES ('"+nomeUsuario+"', '"+email+"', '"+senha+"', "+loja+", "+idCargo+", "+ativo+", '"+apelidoUsuario+"', "+envioDiario+")";
 
         sql.execSqlQuery(query, res).then(() => {
             res.json(util.jsonStatusReturn['success'])
@@ -91,6 +89,10 @@ exports.blockUser = function(req, res){
       })
 }
 exports.getAllManagerList = function(req, res){
+    let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, grupoEconomico, idCargo, ativo FROM PRE_USUARIO WHERE idCargo = 2";
+    sql.execSqlQueryClientReturn(query, res);
+}
+exports.getAllPrePedidoList = function(req, res){
     let query = "SELECT idUsuario, nomeUsuario, email, apelidoUsuario, loja, idCargo, ativo FROM PRE_USUARIO WHERE idCargo = 2";
     sql.execSqlQueryClientReturn(query, res);
 }

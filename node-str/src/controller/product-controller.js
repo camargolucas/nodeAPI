@@ -146,8 +146,11 @@ exports.insertPedido = function (req, res) {
 // #################////////##########################################
 // ## Função utilizada para resgatar todos os Produtos #######
 module.exports.getAll = function (req, res) {
-
     let query = "SELECT IDPRODUTO,NOMEPROD AS NAME, RTRIM(TIPO) AS TIPO FROM PRODUTO"
     sql.execSqlQueryClientReturn(query, res)
+}
 
+exports.getEstoqueAll = function(req, res){
+    let query = "SELECT PRODUTO.nomeProd, PRE_ESTOQUE_DETALHADO.quantidade, PRE_ESTOQUE_DETALHADO.unidade, PRE_ESTOQUE_DETALHADO.idProduto, PRE_ESTOQUE_DETALHADO.idEstoqueDet, PRE_ESTOQUE_DETALHADO.idEstoque, PRE_ESTOQUE.dataEstoque, PRE_ESTOQUE.idUsuario FROM PRODUTO, PRE_ESTOQUE_DETALHADO, PRE_ESTOQUE WHERE PRODUTO.idProduto = PRE_ESTOQUE_DETALHADO.idProduto AND PRE_ESTOQUE_DETALHADO.idEstoque = PRE_ESTOQUE.idEstoque ORDER BY PRE_ESTOQUE.dataEstoque DESC"
+    sql.execSqlQueryClientReturn(query, res)
 }
