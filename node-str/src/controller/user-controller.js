@@ -310,7 +310,6 @@ module.exports.getIdUserWithToken = function (token) {
   let dataUser = JSON.parse(buff.toString("ascii"));
 
   //retornamos o ID do usuário abstraido do TOKEN.
-  console.log("ID_USER :" + dataUser["id"]);
   return dataUser["id"];
 };
 
@@ -356,7 +355,6 @@ exports.getSentRequest = function (req, res) {
   sql.execSqlQueryClientReturn(query, res);
 };
 
-
 exports.updateUser = function (req, res) {
 
   let userData = JSON.parse(req.params.data)
@@ -380,4 +378,13 @@ exports.updateUser = function (req, res) {
     .then(() => {
       res.json(util.jsonStatusReturn['success'])
     })
+}
+
+exports.getUserLevel = function(idUser){
+  let cargo = 0;
+  let query = "SELECT idCargo FROM PRE_USUARIO WHERE idUsuario = " + idUser;
+  sql.execSqlQuery(query).then(ret => {
+    cargo = ret[0].idCargo;
+  });
+  return cargo;
 }
